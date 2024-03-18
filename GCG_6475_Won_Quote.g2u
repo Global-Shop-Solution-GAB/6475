@@ -1,0 +1,32 @@
+﻿Program.Sub.Preflight.Start
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+v.Local.sSQL.Declare
+v.Local.sRet.Declare
+v.Local.sOrder.Declare
+v.Local.fPrice.Declare
+v.Local.fExtension.Declare
+Function.Intrinsic.UI.UsePixels ' Allows you to use Pixels instead of Twips throughout
+f.Intrinsic.Control.If(v.Caller.Hook, =, "17301")
+	v.Local.sOrder.Set(v.Passed.ORDER)
+	f.ODBC.Connection!con.OpenCompanyConnection
+		f.Intrinsic.String.Build("Select price from ORDER_LINES where order_no = '{0}' and part like 'PROGRESS%'", v.Local.sOrder, v.Local.sSQL)
+		f.ODBC.Connection!con.ExecuteAndReturn(v.Local.sSQL, v.Local.sRet)		
+		f.Intrinsic.Math.Mult(v.Local.sRet.Float, -1, v.Local.fPrice)
+		
+		f.Intrinsic.String.Build("Select extension from ORDER_LINES where order_no = '{0}' and part like 'PROGRESS%'", v.Local.sOrder, v.Local.sSQL)
+		f.ODBC.Connection!con.ExecuteAndReturn(v.Local.sSQL, v.Local.sRet)		
+		f.Intrinsic.Math.Mult(v.Local.sRet.Float, -1, v.Local.fExtension)
+		
+	 	f.Intrinsic.String.Build("Update ORDER_LINES set Price = '{1}', Extension = '{1}', discount_price = '{1}', price_order = '{1}', price_disc_ord = '{1}',  Extension_order = '{1}', Line_Type = 'P', UM_Inventory = 'EA', Flag_Billing_Price = 'N', Flag_Purchased = 'N', Lotbin_Flg = 'N', Apply_Matl_schrg = 'N', Flag_data_cnv = '', Flag_Cogs = 'N', Flag_Bom = '' where Order_NO = '{0}' and part like 'PROGRESS%'", v.Local.sOrder, v.Local.fPrice, v.Local.fExtension, v.Local.sSQL)
+		f.ODBC.Connection!con.Execute(v.Local.sSQL)
+	f.ODBC.Connection!con.Close
+f.Intrinsic.Control.EndIf
+
+Program.Sub.Main.End
+
+Program.Sub.Comments.Start
+${$5$}$3.0.0.0$}$1
+${$6$}$aanazco$}$20210830171421146$}$7aQAV3Tor/tR9bkuakHbuzQlHVuXCGOzCR9wnodKcxBIIZwEHCX21Q2NHxdBVzYP4skX3CD++DE=
+Program.Sub.Comments.End
